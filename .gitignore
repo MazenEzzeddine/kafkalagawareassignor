@@ -1,0 +1,10 @@
+# Default ignored files
+/.idea
+
+/target
+
+consumerlagaware.iml
+
+dependency-reduced-pom.xml
+
+

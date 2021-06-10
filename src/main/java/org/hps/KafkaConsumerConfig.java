@@ -54,6 +54,8 @@ public class KafkaConsumerConfig {
         Properties props = new Properties();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, config.getBootstrapServers());
         props.put(ConsumerConfig.GROUP_ID_CONFIG, config.getGroupId());
+
+
         if (config.getClientRack() != null) {
             props.put(ConsumerConfig.CLIENT_RACK_CONFIG, config.getClientRack());
         }

@@ -373,6 +373,8 @@ public class LagBasedPartitionAssignor extends AbstractAssignor implements Confi
 
                 topicPartitionLags.put(topic, new ArrayList<>());
 
+
+
                 // Get begin/end offset in each partition
                 final Map<TopicPartition, Long> topicBeginOffsets = metadataConsumer.beginningOffsets(topicPartitions);
                 final Map<TopicPartition, Long> topicEndOffsets = metadataConsumer.endOffsets(topicPartitions);
