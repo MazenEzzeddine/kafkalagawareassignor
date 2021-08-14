@@ -5,17 +5,13 @@ import org.apache.kafka.common.Cluster;
 import org.apache.kafka.common.TopicPartition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.*;
 
 public abstract class AbstractAssignor implements ConsumerPartitionAssignor {
     private static final Logger log = LoggerFactory.getLogger(AbstractAssignor.class);
     public static final int DEFAULT_GENERATION = -1;
-
-
 //    public abstract Map<String, List<TopicPartition>> assign(Map<String, Integer> partitionsPerTopic,
 //                                                             Map<String, Subscription> subscriptions);
-
     public abstract GroupAssignment assign(Cluster metadata, GroupSubscription groupSubscription);
 
     public static final class MemberData {
@@ -29,9 +25,7 @@ public abstract class AbstractAssignor implements ConsumerPartitionAssignor {
             this.rates = rates;
         }
     }
-
     abstract protected MemberData memberData(Subscription subscription);
-
     public static class MemberInfo implements Comparable<MemberInfo> {
         public final String memberId;
         public final Optional<String> groupInstanceId;
@@ -40,7 +34,6 @@ public abstract class AbstractAssignor implements ConsumerPartitionAssignor {
             this.memberId = memberId;
             this.groupInstanceId = groupInstanceId;
         }
-
         @Override
         public int compareTo(MemberInfo otherMemberInfo) {
             if (this.groupInstanceId.isPresent() &&
@@ -55,18 +48,14 @@ public abstract class AbstractAssignor implements ConsumerPartitionAssignor {
                 return this.memberId.compareTo(otherMemberInfo.memberId);
             }
         }
-
         @Override
         public boolean equals(Object o) {
             return o instanceof MemberInfo && this.memberId.equals(((MemberInfo) o).memberId);
         }
-
-
         @Override
         public int hashCode() {
             return memberId.hashCode();
         }
-
         @Override
         public String toString() {
             return "MemberInfo [member.id: " + memberId
