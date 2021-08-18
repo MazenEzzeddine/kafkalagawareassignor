@@ -121,8 +121,6 @@ public class KafkaConsumerTestAssignor {
             }
 
             log.info(" So far Percentage of authorization that violated the SLA so far {}",((double)sum/(double)receivedMsgs)*100.0);
-
-
             log.info("Sleeping for {} milliseconds", config.getSleep());
 
 
