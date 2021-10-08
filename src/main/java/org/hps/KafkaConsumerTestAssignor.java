@@ -42,9 +42,9 @@ public class KafkaConsumerTestAssignor {
         KafkaConsumer consumer = new KafkaConsumer(props);
         consumer.subscribe(Collections.singletonList(config.getTopic()), new HandleRebalance());
 
-        int[] percentile = new int[11];
-        for (int i = 0; i < 11; i++)
-            percentile[i] = 0;
+//        int[] percentile = new int[11];
+//        for (int i = 0; i < 11; i++)
+//            percentile[i] = 0;
         while (receivedMsgs < config.getMessageCount()) {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(Long.MAX_VALUE));
             for (ConsumerRecord<String, String> record : records) {
