@@ -52,7 +52,10 @@ public class KafkaConsumerTestAssignor {
                 log.info("Received message:");
                 log.info("\tpartition: {}", record.partition());
                 log.info("\toffset: {}", record.offset());
-                log.info("\tvalue: {}", record.value());
+                //log.info("\tvalue: {}", record.value());
+                log.info("\tkey: {}", record.key());
+
+                log.info("\tvalue: {}", new String(record.value()));
 
 
                 receivedMsgs++;
