@@ -11,12 +11,24 @@ import java.util.Collections;
 import java.util.Properties;
 
 import org.apache.kafka.clients.consumer.CooperativeStickyAssignor;
+import org.rocksdb.Options;
+import org.rocksdb.RocksDB;
+import org.rocksdb.RocksDBException;
 
 public class KafkaConsumerTestAssignor {
     private static final Logger log = LogManager.getLogger(KafkaConsumerTestAssignor.class);
     private static long iteration = 0;
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, RocksDBException {
+        RocksDB.loadLibrary();
+
+        final Options options = new Options();
+        options.setCreateIfMissing(true);
+        final RocksDB db = RocksDB.open(options, "/disk1/cons1");
+
+        // make sure you disposal necessary RocksDB objects
+
+
         KafkaConsumerConfig config = KafkaConsumerConfig.fromEnv();
         log.info(KafkaConsumerConfig.class.getName() + ": {}", config.toString());
         Properties props = KafkaConsumerConfig.createProperties(config);
@@ -58,6 +70,14 @@ public class KafkaConsumerTestAssignor {
                 log.info("\tvalue: {}", new String(record.value()));
 
 
+                log.info("Writing record to RcoksDB key {}", record.key());
+                db.put(record.key().getBytes(), record.value().getBytes());
+                log.info("Reading record from Rocks key {}", record.key() );
+                log.info( "key {}, value from rocks {}", record.key(), new String (db.get(record.key().getBytes())));
+
+
+
+
                 receivedMsgs++;
 
             }
@@ -84,6 +104,11 @@ public class KafkaConsumerTestAssignor {
                 log.info("shutdown hook you can commit your offsets or close your state.");
             }
         });
+
+        db.close();
+        options.close();
+
+
          log.info("received msgs {}", receivedMsgs);
     }
 }
