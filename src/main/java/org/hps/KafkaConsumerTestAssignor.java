@@ -40,7 +40,7 @@ public class KafkaConsumerTestAssignor {
 
         boolean commit = !Boolean.parseBoolean(config.getEnableAutoCommit());
         KafkaConsumer consumer = new KafkaConsumer(props);
-        consumer.subscribe(Collections.singletonList(config.getTopic()));
+        consumer.subscribe(Collections.singletonList(config.getTopic()), new HandleRebalance());
 
         int[] percentile = new int[11];
         for (int i = 0; i < 11; i++)
@@ -48,39 +48,15 @@ public class KafkaConsumerTestAssignor {
         while (receivedMsgs < config.getMessageCount()) {
             ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(Long.MAX_VALUE));
             for (ConsumerRecord<String, String> record : records) {
+
+                log.info("Received message:");
+                log.info("\tpartition: {}", record.partition());
+                log.info("\toffset: {}", record.offset());
+                log.info("\tvalue: {}", record.value());
+
+
                 receivedMsgs++;
-                if (System.currentTimeMillis() - record.timestamp()  <= 1000) {
-                    percentile[0]++;
-                } else if (System.currentTimeMillis() - record.timestamp()  > 1000
-                        && System.currentTimeMillis() - record.timestamp()  <= 2000) {
-                    percentile[1]++;
-                } else if (System.currentTimeMillis() - record.timestamp()  > 2000
-                        && (System.currentTimeMillis() - record.timestamp()  <= 3000)) {
-                    percentile[2]++;
-                } else if (System.currentTimeMillis() - record.timestamp()  > 3000
-                        && (System.currentTimeMillis() - record.timestamp()  <= 4000)) {
-                    percentile[3]++;
-                } else if (System.currentTimeMillis() - record.timestamp()  > 4000
-                        && (System.currentTimeMillis() - record.timestamp()  <= 5000)) {
-                    percentile[4]++;
-                } else if (System.currentTimeMillis() - record.timestamp()  > 5000
-                        && (System.currentTimeMillis() - record.timestamp()  <= 6000)) {
-                    percentile[5]++;
-                }  else if (System.currentTimeMillis() - record.timestamp()  > 6000
-                        && System.currentTimeMillis() - record.timestamp()  <= 7000) {
-                    percentile[6]++;
-                } else if (System.currentTimeMillis() - record.timestamp()  > 7000
-                        && (System.currentTimeMillis() - record.timestamp()  <= 8000)) {
-                    percentile[7]++;
-                } else if (System.currentTimeMillis() - record.timestamp()  > 8000
-                        && System.currentTimeMillis() - record.timestamp()  <= 9000) {
-                    percentile[8]++;
-                } else if (System.currentTimeMillis() - record.timestamp()  > 9000
-                        && (System.currentTimeMillis() - record.timestamp()  <= 10000)) {
-                    percentile[9]++;
-                } else if (System.currentTimeMillis() - record.timestamp()  > 10000 ) {
-                    percentile[10]++;
-                }
+
             }
             try {
                 consumer.commitSync();
@@ -90,41 +66,12 @@ public class KafkaConsumerTestAssignor {
             }
 
 
-            log.info("==============================Statistics of {} poll =====================");
 
-            log.info ("Number {} of message less than 1 secs",
-                    percentile[0]);
-            log.info ("Number {} of message  between  1  and 2 secs ",
-                    percentile[1]);
-            log.info ("Number {} and Percentage of message between  between  2  and 3  secs ",
-                    percentile[2]);
-            log.info ("Number {}  messages   between  3  and 4  secs",
-                    percentile[3]);
-            log.info (" Number {} of message  between  4  and 5  secs",
-                    percentile[4]);
-            log.info ("Number {}  of messages  between  5  and 6  secs ",
-                    percentile[5]);
-            log.info ("Number {} of messages  between  6  and 7  secs",
-                    percentile[6]);
-            log.info ("Number {}  of message  between  7  and 8  secs ",
-                    percentile[7]);
-            log.info ("Number {}  of message  between  8  and 9  secs ",
-                    percentile[8]);
-            log.info ("Number {} and Percentage of message  between  9  and 10  secs",
-                    percentile[9]);
-            log.info ("Number  {}  of messages greater than 10  secs",
-                    percentile[10]);
-
-            long sum = 0;
-           for(int m=5; m<=10; m++) {
-               sum += percentile[m];
-            }
-
-            log.info(" So far Percentage of authorization that violated the SLA so far {}",((double)sum/(double)receivedMsgs)*100.0);
             log.info("Sleeping for {} milliseconds", config.getSleep());
 
 
             Thread.sleep(Long.parseLong(config.getSleep()));
+            log.info("==============================Calling Poll Again =====================");
             iteration++;
         }
 
