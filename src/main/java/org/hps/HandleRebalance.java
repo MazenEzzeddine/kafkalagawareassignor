@@ -22,14 +22,23 @@ public class HandleRebalance implements ConsumerRebalanceListener {
             if (p.partition()==0) {
                 try {
                     log.info("opened DB for partition 0");
-                    KafkaConsumerTestAssignor.db0 = RocksDB.open(KafkaConsumerTestAssignor.options, "/disk1/consumer00");
+                    KafkaConsumerTestAssignor.db0 = RocksDB.open(KafkaConsumerTestAssignor.options, "/disk1/consumerZERO");
                 } catch (RocksDBException e) {
                     e.printStackTrace();
                 }
-            } else if (p.partition()==1) {
+            }
+            if (p.partition()==1) {
                 try {
                     log.info("opened DB for partition 1");
-                    KafkaConsumerTestAssignor.db1 = RocksDB.open(KafkaConsumerTestAssignor.options, "/disk2/consumer11");
+                    KafkaConsumerTestAssignor.db1 = RocksDB.open(KafkaConsumerTestAssignor.options, "/disk2/consumerONE");
+                } catch (RocksDBException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (p.partition()==2) {
+                try {
+                    log.info("opened DB for partition 2");
+                    KafkaConsumerTestAssignor.db2 = RocksDB.open(KafkaConsumerTestAssignor.options, "/disk3/consumerTWO");
                 } catch (RocksDBException e) {
                     e.printStackTrace();
                 }
@@ -45,9 +54,14 @@ public class HandleRebalance implements ConsumerRebalanceListener {
             if (p.partition()==0) {
                     log.info("closed DB for partition 0");
                     KafkaConsumerTestAssignor.db0.close();
-            } else if (p.partition()==1) {
+            }
+            if (p.partition()==1) {
                     log.info("opened DB for partition 1");
                     KafkaConsumerTestAssignor.db1.close();
+            }
+            if (p.partition()==2) {
+                log.info("opened DB for partition 2");
+                KafkaConsumerTestAssignor.db2.close();
             }
         }
     }

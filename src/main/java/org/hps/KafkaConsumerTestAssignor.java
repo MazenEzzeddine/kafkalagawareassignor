@@ -22,6 +22,7 @@ public class KafkaConsumerTestAssignor {
     private static long iteration = 0;
     static RocksDB db0;
     static RocksDB db1;
+    static RocksDB db2;
     static  Options options;
     public static void main(String[] args) throws InterruptedException, RocksDBException {
         RocksDB.loadLibrary();
