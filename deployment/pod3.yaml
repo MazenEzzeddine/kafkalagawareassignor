@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfs-pv-demo-depl3
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nfs-pv-demo3
+  template:
+    metadata:
+      name: nfs-pv-pod3
+      labels:
+        app: nfs-pv-demo3
+    spec:
+      containers:
+      - image: busybox
+        name: nfs-pv-multi
+        imagePullPolicy: Always
+        #name: busybox
+        command: ["sh", "-c", "echo hello from  3 >> /disk1/from3.txt && echo hello from 2 >> /disk2/from2.txt && echo hello  from 3 >> /disk3/from3.txt &&  sleep 3600" ]
+        volumeMounts:
+          # name should match from volumes section
+          - name: nfs-volume-1
+            mountPath: "/disk1"
+          - name: nfs-volume-2
+            mountPath: "/disk2"
+          - name: nfs-volume-3
+            mountPath: "/disk3"
+      volumes:
+      - name: nfs-volume-1
+        persistentVolumeClaim:
+          claimName: nfs-pvc1
+      - name: nfs-volume-2
+        persistentVolumeClaim:
+           claimName: nfs-pvc2
+      - name: nfs-volume-3
+        persistentVolumeClaim:
+           claimName: nfs-pvc3
