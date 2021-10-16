@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: workload
+spec:
+  restartPolicy: "Never"
+  containers:
+    #- image: docker.io/mezzeddine/workload2772021.1
+    - image: docker.io/mezzeddine/workload8-10-2021:latest
+      #- image: docker.io/mezzeddine/workloaddd
+      name: workload
+      env:
+        - name: BOOTSTRAP_SERVERS
+          value: my-cluster-kafka-bootstrap:9092
+          #value: my-cluster-kafka-bootstrap:9092
+        - name: TOPIC
+          value: testtopic4
+        - name: DELAY_MS
+          value: "1000"
+        - name: LOG_LEVEL
+          value: "INFO"
+        - name: MESSAGE_COUNT
+          value: "1000000"
+        - name: PRODUCER_ACKS
+          value: "all"
+        - name: ADDITIONAL_CONFIG
+          value: |
+            retries=100
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: cons1persec
+  name: cons1persec
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cons1persec
+  template:
+    metadata:
+      labels:
+        app: cons1persec
+    spec:
+      containers:
+        - name: cons1persec
+          #image: docker.io/mezzeddine/consumerrrrr
+          #image: docker.io/mezzeddine/consumer8-10-20211.3:latest
+          #mezzeddine/consumer3partitions
+          image: docker.io/mezzeddine/consumer3partitions.3
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            # name should match from volumes section
+            - name: nfs-volume-1
+              mountPath: "/disk1"
+            - name: nfs-volume-2
+              mountPath: "/disk2"
+            - name: nfs-volume-3
+              mountPath: "/disk3"
+          env:
+            - name: BOOTSTRAP_SERVERS
+              value: my-cluster-kafka-bootstrap:9092
+            - name: TOPIC
+              value: testtopic4
+            - name: GROUP_ID
+              value: testgroup4
+            - name: LOG_LEVEL
+              value: "INFO"
+            - name: SLEEP
+              value: "1000"
+            - name: MESSAGE_COUNT
+              value: "1000000"
+            - name: REBALANCE
+              value: "continualfloww"
+            - name: ADDITIONAL_CONFIG
+              value: |
+                max.poll.records=100
+      terminationGracePeriodSeconds: 60
+      volumes:
+        - name: nfs-volume-1
+          persistentVolumeClaim:
+            claimName: nfs-pvc1
+        - name: nfs-volume-2
+          persistentVolumeClaim:
+            claimName: nfs-pvc2
+        - name: nfs-volume-3
+          persistentVolumeClaim:
+            claimName: nfs-pvc3
+
+
