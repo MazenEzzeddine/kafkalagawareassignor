@@ -71,6 +71,11 @@ public class KafkaConsumerTestAssignor {
                     log.info("Reading record from Rocks key {}, partition 1", record.key() );
                     log.info( "key {}, value from rocks {}, partition 1", record.key(), new String (db1.get(record.key().getBytes())));
                 }
+                else if (record.partition()== 2) {
+                    db2.put(record.key().getBytes(), record.value().getBytes());
+                    log.info("Reading record from Rocks key {}, partition 2", record.key() );
+                    log.info( "key {}, value from rocks {}, partition 2", record.key(), new String (db2.get(record.key().getBytes())));
+                }
                 receivedMsgs++;
             }
             try {
@@ -98,6 +103,7 @@ public class KafkaConsumerTestAssignor {
 
         db0.close();
         db1.close();
+        db2.close();
         options.close();
 
 
